@@ -4,7 +4,16 @@ import { useRef } from "react";
 import { cn } from "@/lib/utils";
 
 // Tarjeta con un foco de luz que sigue al puntero (solo en dispositivos con hover).
-export function SpotlightCard({ children, className }: { children: React.ReactNode; className?: string }) {
+// `accent` cambia el color del foco y del borde (por defecto, el azul del sitio).
+export function SpotlightCard({
+  children,
+  className,
+  accent,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  accent?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
@@ -19,14 +28,15 @@ export function SpotlightCard({ children, className }: { children: React.ReactNo
     <div
       ref={ref}
       onPointerMove={onPointerMove}
+      style={accent ? ({ "--spot": accent } as React.CSSProperties) : undefined}
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border bg-surface/60 transition-colors hover:border-accent/50",
+        "group relative overflow-hidden rounded-2xl border border-border bg-surface/60 transition-colors hover:border-[color-mix(in_srgb,var(--spot,var(--accent))_50%,transparent)]",
         className,
       )}
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(420px_circle_at_var(--x,50%)_var(--y,50%),rgb(47_107_255/0.16),transparent_45%)]"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(420px_circle_at_var(--x,50%)_var(--y,50%),color-mix(in_srgb,var(--spot,var(--accent))_16%,transparent),transparent_45%)]"
       />
       <div className="relative h-full">{children}</div>
     </div>

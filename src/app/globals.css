@@ -105,7 +105,18 @@ body {
   animation: var(--animate-beam);
 }
 
+/* Transición entre la tarjeta de un proyecto y su página (React <ViewTransition>). */
+::view-transition-group(.morph) {
+  animation-duration: 400ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+
   html {
     scroll-behavior: auto;
   }

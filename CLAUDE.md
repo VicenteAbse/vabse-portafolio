@@ -24,7 +24,9 @@ Portafolio personal de Vicente Abse. Landing de una sola página, en español, t
 ## Estructura
 
 - `src/content/site.ts`: **todo el contenido** (textos, proyectos, tecnologías, contacto, script de la terminal). Los `TODO` son textos de ejemplo por reemplazar.
-- `src/components/sections.tsx`: secciones de la página (Hero, About, Projects, Stack, Contact, Footer). Son Server Components.
+- Páginas de detalle: un proyecto con `detail` en `site.ts` obtiene `/proyectos/<slug>/` (`src/app/proyectos/[slug]/page.tsx`, con `generateStaticParams` y `dynamicParams = false`). Las capturas van en `public/projects/<slug>/` y se muestran en `project-gallery.tsx` (fila deslizable + visor `<dialog>`). La tarjeta y el título de la página comparten un `<ViewTransition name="project-<slug>">` para la animación entre ambas. `brand.accent` tiñe la tarjeta y la página (variable CSS `--brand`).
+- Navbar y Footer viven en `layout.tsx`; los enlaces del navbar son `/#seccion` para que funcionen desde cualquier página.
+- `src/components/sections.tsx`: secciones de la página (Hero, About, Projects, Stack, Socials, Footer). Son Server Components.
 - Componentes cliente: `terminal.tsx` (tipeo del hero), `navbar.tsx`, `spotlight-card.tsx` (foco que sigue al puntero), `reveal.tsx` (aparición al hacer scroll), `copy-email.tsx`.
 - `motion-provider.tsx`: `LazyMotion` (en modo `strict`) + `MotionConfig reducedMotion="user"`. Usa siempre `m.*`, nunca `motion.*`, para que el bundle quede chico.
 - `src/components/icons.tsx`: logos de GitHub/LinkedIn como SVG propios (lucide ya no incluye marcas).

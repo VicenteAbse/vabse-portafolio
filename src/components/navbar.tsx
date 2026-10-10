@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { href: "#sobre-mi", label: "Sobre mí" },
-  { href: "#proyectos", label: "Proyectos" },
-  { href: "#stack", label: "Stack" },
-  { href: "#contacto", label: "Contacto" },
+  { href: "/#sobre-mi", label: "Sobre mí" },
+  { href: "/#proyectos", label: "Proyectos" },
+  { href: "/#stack", label: "Stack" },
+  { href: "/#redes", label: "Redes" },
 ];
 
 export function Navbar() {
@@ -28,22 +29,22 @@ export function Navbar() {
           scrolled ? "border-border bg-background/80 backdrop-blur-md" : "border-transparent bg-transparent",
         )}
       >
-        <a
-          href="#inicio"
+        <Link
+          href="/#inicio"
           className="rounded-full px-2 py-1 font-mono text-sm font-semibold text-foreground"
           aria-label="Ir al inicio"
         >
           <span className="text-accent-bright">&gt;</span>va<span className="animate-blink text-accent-bright">_</span>
-        </a>
+        </Link>
         <ul className="flex items-center">
           {links.map((l) => (
             <li key={l.href}>
-              <a
+              <Link
                 href={l.href}
                 className="rounded-full px-2 py-1.5 text-xs text-muted transition-colors hover:bg-white/5 hover:text-foreground sm:px-3 sm:text-sm"
               >
                 {l.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
