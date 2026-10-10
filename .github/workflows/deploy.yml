@@ -1,0 +1,65 @@
+# CD: en cada push a main compila el sitio y sube out/ al Droplet, donde lo sirve Caddy.
+#
+# Secrets requeridos (Settings → Secrets and variables → Actions):
+#   DEPLOY_HOST         IP del servidor
+#   DEPLOY_USER         usuario SSH del servidor
+#   DEPLOY_SSH_KEY      llave privada exclusiva del deploy del portafolio
+#   DEPLOY_KNOWN_HOSTS  salida de `ssh-keyscan -t ed25519 <IP>` (evita conectarse a un servidor impostor)
+#
+# En el servidor, esa llave está restringida en ~/.ssh/authorized_keys con
+# command="/usr/bin/rrsync -wo /home/vicente/sites/vicenteabse",restrict
+# para que solo pueda escribir con rsync dentro de esa carpeta, no abrir una terminal.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Nunca dos deploys a la vez; si llega otro push, espera a que termine el actual.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Configurar SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Subir archivos
+        # rrsync fija la carpeta destino en el servidor, así que la ruta es relativa a ella.
+        # --delay-updates deja todos los archivos nuevos en su lugar al final, casi de golpe;
+        # --delete-after borra lo que ya no existe en out/ una vez copiado lo nuevo.
+        run: |
+          rsync -az --delete-after --delay-updates \
+            -e "ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes" \
+            out/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:./"
+
+      - name: Verificar que el sitio responde
+        # El HTML generado por Next referencia /_next/static/; la página de prueba no.
+        run: |
+          curl -fsS https://vicenteabse.cl/ | grep -q "/_next/static/"
+          echo "Sitio arriba con el build nuevo"

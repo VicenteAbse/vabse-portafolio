@@ -36,10 +36,10 @@ Portafolio personal de Vicente Abse. Landing de una sola página, en español, t
 - Mobile first: revisa a 375px de ancho que no haya scroll horizontal.
 - El contenido del hero no se anima con Motion (afecta al LCP); usa la clase `animate-fade-up` de CSS.
 
-## Despliegue (planificado, aún no implementado)
+## Despliegue
 
-- Servidor: Droplet de DigitalOcean (Ubuntu 24.04), `ssh vabse-prod` (usuario `vicente`).
-- Proxy Caddy compartido con Docker en `~/proxy` (docker-compose.yml + Caddyfile); hoy sirve `tribu-api.vicenteabse.cl`.
-- Los archivos estáticos irán en `~/sites/vicenteabse/` (montado en el contenedor de Caddy), con un bloque `vicenteabse.cl` en el Caddyfile y `www` → sin `www`.
-- DNS en DigitalOcean: faltan los registros A de `@` y `www`.
-- CI/CD: GitHub Actions en push a `main` → build + rsync, con una llave SSH dedicada restringida con `rrsync` en `authorized_keys`. Secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS` (mismo esquema que el backend).
+- Automático: cada push a `main` corre `.github/workflows/deploy.yml` (lint + build + rsync de `out/` a `~/sites/vicenteabse/`). Los PR a `main` corren `ci.yml` (lint + build).
+- Servidor: Droplet de DigitalOcean (Ubuntu 24.04), `ssh vabse-prod` (usuario `vicente`). Los comandos en el servidor los ejecuta Vicente: dale cada comando explicado y espera su confirmación.
+- La llave de Actions está restringida en `~/.ssh/authorized_keys` con `command="/usr/bin/rrsync -wo /home/vicente/sites/vicenteabse",restrict`: solo puede escribir en esa carpeta, por eso el destino del rsync es relativo (`:./`). Las otras líneas de ese archivo (la llave personal de Vicente y la de deploy de tribu-backend) no se tocan.
+- Secrets del repo: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS` (mismo esquema que tribu-backend).
+- Caddy (proxy compartido) se configura en el repo `vabse-infra`, no aquí: sirve `/srv/sites/vicenteabse` (montaje de solo lectura de `~/sites`), 404 → `/404.html`, caché inmutable para `/_next/static/*` y `www` → sin `www`. Para desplegar no hace falta tocarlo.
