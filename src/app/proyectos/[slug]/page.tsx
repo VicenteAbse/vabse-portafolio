@@ -7,6 +7,7 @@ import { ProjectGallery } from "@/components/project-gallery";
 import { Reveal } from "@/components/reveal";
 import { StatusBadge, StackList } from "@/components/sections";
 import { GitHubIcon } from "@/components/icons";
+import { StoreBadges } from "@/components/store-badges";
 import { projects, site } from "@/content/site";
 
 // Solo existen las páginas de los proyectos con `detail`; el resto es 404.
@@ -80,6 +81,7 @@ export default async function ProjectPage(props: PageProps<"/proyectos/[slug]">)
               ))}
             </div>
             <StackList stack={p.stack} />
+            {d.stores && d.stores.length > 0 && <StoreBadges stores={d.stores} />}
             {(p.url || p.repo) && (
               <div className="mt-6 flex flex-wrap gap-4 text-sm">
                 {p.url && (

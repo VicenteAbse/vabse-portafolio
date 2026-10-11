@@ -57,6 +57,8 @@ export type ProjectDetail = {
   features: { title: string; text: string }[];
   tech: { title: string; items: string[] }[];
   role: string;
+  // Tiendas de apps. Sin `url` se muestra como "Próximamente"; con `url`, como enlace de descarga.
+  stores?: { store: "app-store" | "google-play"; url?: string }[];
 };
 
 export const projects: Project[] = [
@@ -73,28 +75,28 @@ export const projects: Project[] = [
     brand: { accent: "#a70b0b", logo: "/projects/abryl-logo.svg" },
   },
   {
-    name: "Trivvy",
+    name: "Trivy",
     description:
       "App móvil para encontrar grupos de personas cercanas con intereses en común. Das like a los grupos que te interesan y, cuando se completa el mínimo de integrantes, se abre el chat del grupo.",
     stack: ["Ionic", "Angular", "Capacitor", "Spring Boot", "PostgreSQL", "WebSocket"],
     status: "desarrollo",
     brand: { accent: "#6c63ff" },
     detail: {
-      slug: "trivvy",
+      slug: "trivy",
       tagline: "Encuentra a tu grupo cerca de ti.",
       intro: [
-        "Trivvy nace de una idea simple: armar un grupo para hacer algo que te gusta es difícil si no conoces a nadie con los mismos intereses. Creas un grupo (por ejemplo, «Devs Santiago»), defines cuántas personas necesitas como mínimo y la app se lo muestra a la gente que está cerca.",
+        "Trivy nace de una idea simple: armar un grupo para hacer algo que te gusta es difícil si no conoces a nadie con los mismos intereses. Creas un grupo (por ejemplo, «Devs Santiago»), defines cuántas personas necesitas como mínimo y la app se lo muestra a la gente que está cerca.",
         "Quien lo ve puede darle like o pasar. Al dar like se suma como interesado y, cuando se completa el mínimo de integrantes, el grupo se activa y se abre su chat. A partir de ahí, el creador y los administradores pueden organizar eventos y decidir quién más entra.",
       ],
       screenshots: [
-        { src: "/projects/trivvy/01-descubrir.jpg", caption: "Descubrir grupos cercanos" },
-        { src: "/projects/trivvy/02-deslizar.jpg", caption: "Deslizar: like o pasar" },
-        { src: "/projects/trivvy/03-detalle-grupo.jpg", caption: "Detalle del grupo" },
-        { src: "/projects/trivvy/04-chat.jpg", caption: "Chat en tiempo real" },
-        { src: "/projects/trivvy/05-admin-eventos.jpg", caption: "Administración: eventos" },
-        { src: "/projects/trivvy/06-nuevo-evento.jpg", caption: "Crear un evento" },
-        { src: "/projects/trivvy/07-crear-grupo.jpg", caption: "Crear un grupo" },
-        { src: "/projects/trivvy/08-crear-grupo-politica.jpg", caption: "Tamaño y política de acceso" },
+        { src: "/projects/trivy/01-descubrir.jpg", caption: "Descubrir grupos cercanos" },
+        { src: "/projects/trivy/02-deslizar.jpg", caption: "Deslizar: like o pasar" },
+        { src: "/projects/trivy/03-detalle-grupo.jpg", caption: "Detalle del grupo" },
+        { src: "/projects/trivy/04-chat.jpg", caption: "Chat en tiempo real" },
+        { src: "/projects/trivy/05-admin-eventos.jpg", caption: "Administración: eventos" },
+        { src: "/projects/trivy/06-nuevo-evento.jpg", caption: "Crear un evento" },
+        { src: "/projects/trivy/07-crear-grupo.jpg", caption: "Crear un grupo" },
+        { src: "/projects/trivy/08-crear-grupo-politica.jpg", caption: "Tamaño y política de acceso" },
       ],
       steps: [
         {
@@ -129,6 +131,7 @@ export const projects: Project[] = [
       ],
       // TODO: ajusta tu rol si corresponde
       role: "Proyecto personal de punta a punta: diseño de la app, desarrollo del frontend móvil y de la API, modelo de datos y despliegue con CI/CD en un servidor propio.",
+      stores: [{ store: "app-store" }, { store: "google-play" }],
     },
   },
 ];

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { ProjectDetail } from "@/content/site";
+import { cn } from "@/lib/utils";
 
 type Shot = ProjectDetail["screenshots"][number];
 
@@ -24,11 +25,26 @@ function PhoneFrame({ shot, priority }: { shot: Shot; priority?: boolean }) {
   );
 }
 
+function NavButton({ dir, onClick, className }: { dir: 1 | -1; onClick: () => void; className?: string }) {
+  const Icon = dir === 1 ? ChevronRight : ChevronLeft;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={dir === 1 ? "Siguiente" : "Anterior"}
+      className={cn("shrink-0 rounded-full border border-white/15 bg-black/40 p-2 text-white/80 transition hover:text-white", className)}
+    >
+      <Icon className="size-6" />
+    </button>
+  );
+}
+
 // Fila de capturas que se desliza con el dedo (scroll-snap) y se amplía al tocar.
 export function ProjectGallery({ screenshots }: { screenshots: Shot[] }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const rowRef = useRef<HTMLUListElement>(null);
   const [open, setOpen] = useState<number | null>(null);
+  const touchX = useRef<number | null>(null);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -89,19 +105,30 @@ export function ProjectGallery({ screenshots }: { screenshots: Shot[] }) {
         className="m-auto max-h-none max-w-none bg-transparent p-4 backdrop:bg-black/85 backdrop:backdrop-blur-sm"
       >
         {open !== null && (
-          <div className="flex items-center gap-3 sm:gap-6">
-            <button type="button" onClick={() => step(-1)} aria-label="Anterior" className="rounded-full border border-white/15 bg-black/40 p-2 text-white/80 transition hover:text-white">
-              <ChevronLeft className="size-6" />
-            </button>
-            <figure className="w-[min(78vw,calc(85dvh*720/1396))]">
+          // En el celular las flechas van bajo la imagen (a los costados no caben) y también
+          // se puede deslizar con el dedo; desde `sm` van a los lados.
+          <div className="flex items-center gap-6">
+            <NavButton dir={-1} onClick={() => step(-1)} className="hidden sm:block" />
+            <figure
+              className="w-[min(calc(100vw-2rem),calc(75dvh*720/1396))] sm:w-[min(60vw,calc(85dvh*720/1396))]"
+              onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
+              onTouchEnd={(e) => {
+                if (touchX.current === null) return;
+                const dx = e.changedTouches[0].clientX - touchX.current;
+                touchX.current = null;
+                if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+              }}
+            >
               <PhoneFrame shot={screenshots[open]} />
-              <figcaption className="mt-3 text-center font-mono text-sm text-white/80">
-                {screenshots[open].caption} · {open + 1}/{screenshots.length}
+              <figcaption className="mt-3 flex items-center justify-between gap-3 font-mono text-sm text-white/80 sm:justify-center">
+                <NavButton dir={-1} onClick={() => step(-1)} className="sm:hidden" />
+                <span className="text-center">
+                  {screenshots[open].caption} · {open + 1}/{screenshots.length}
+                </span>
+                <NavButton dir={1} onClick={() => step(1)} className="sm:hidden" />
               </figcaption>
             </figure>
-            <button type="button" onClick={() => step(1)} aria-label="Siguiente" className="rounded-full border border-white/15 bg-black/40 p-2 text-white/80 transition hover:text-white">
-              <ChevronRight className="size-6" />
-            </button>
+            <NavButton dir={1} onClick={() => step(1)} className="hidden sm:block" />
           </div>
         )}
         <button
